@@ -1,0 +1,161 @@
+import { Link, useLoaderData, useNavigate } from "react-router";
+import type { Route } from "./+types/repository-index";
+import type { RepositoryTree, TreeEntry } from "~/types";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Folder01Icon, File01Icon } from "@hugeicons/core-free-icons";
+import { getRepositoryTree } from "~/dao";
+import { Button } from "~/components/ui/button";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableRow
+} from "~/components/ui/table";
+import { Separator } from "~/components/ui/separator";
+
+export function meta({ }: Route.MetaArgs) {
+    return [
+        { title: "Repository" },
+        { name: "description", content: "Explore the repository files." },
+    ];
+}
+
+export async function loader({ params }: Route.LoaderArgs) {
+    // TODO: Handle branch selection in UI
+    const { repoName, branch = "main" } = params;
+    const tree = await getRepositoryTree(repoName!, branch, "");
+    return { tree, repoName, branch };
+}
+
+const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, repoName: string, branch: string, navigate: (path: string) => void }) => {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="md:col-span-3 space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="bg-muted/50">
+                            <span className="text-muted-foreground font-normal">Branch:</span>
+                            <span>{branch}</span>
+                        </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" >
+                            Go to file
+                        </Button>
+                    </div>
+                </div>
+
+                <Table className="border rounded-lg overflow-hidden bg-background">
+                    <TableBody>
+                        <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
+                            <TableCell colSpan={2} className="text-sm text-muted-foreground py-2 px-4">
+                                Latest commit info would go here...
+                            </TableCell>
+                        </TableRow>
+                        {
+                            tree.map((entry) => {
+                                const to = entry.type === "blob"
+                                    ? `/repos/${repoName}/blob/${entry.hash}`
+                                    : `/repos/${repoName}/tree/${branch}/${entry.name}`;
+
+                                return (
+                                    <TableRow
+                                        key={entry.name}
+                                        className="group cursor-pointer"
+                                        onClick={() => navigate(to)}
+                                    >
+                                        <TableCell className="w-10 pr-0 pl-4">
+                                            <HugeiconsIcon
+                                                icon={entry.type === "tree" ? Folder01Icon : File01Icon}
+                                                className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-400" : "text-muted-foreground"}`}
+                                                size={16}
+                                            />
+                                        </TableCell>
+                                        <TableCell className="px-3">
+                                            <Link
+                                                to={to}
+                                                className="text-sm hover:text-blue-500 transition-colors"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {entry.name}
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })
+                        }
+                    </TableBody>
+                </Table>
+            </div>
+
+            <div className="md:col-span-1 space-y-6">
+                <section className="space-y-4">
+                    <section>
+                        <h3 className="font-semibold text-sm mb-2">About</h3>
+                        <p className="text-sm text-muted-foreground">
+                            {/* TODO: Fetch real description */}
+                            A high-performance git service and web interface clone built with React Router v7 and Go.
+                        </p>
+                    </section>
+
+                    <Separator />
+
+                    <section>
+                        <h3 className="font-semibold text-sm mb-3">Languages</h3>
+                        <div className="space-y-3">
+                            <div className="flex h-2 rounded-full overflow-hidden bg-muted">
+                                <div className="bg-blue-500 w-[64.2%]" title="TypeScript"></div>
+                                <div className="bg-orange-500 w-[31.8%]" title="Go"></div>
+                                <div className="bg-gray-400 w-[4.0%]" title="Other"></div>
+                            </div>
+                            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs">
+                                <span className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span className="font-medium text-foreground">TypeScript</span>
+                                    <span className="text-muted-foreground">64.2%</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                                    <span className="font-medium text-foreground">Go</span>
+                                    <span className="text-muted-foreground">31.8%</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                                    <span className="font-medium text-foreground">Other</span>
+                                    <span className="text-muted-foreground">4.0%</span>
+                                </span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <Separator />
+
+                    <section className="text-sm space-y-2">
+                        <div className="flex items-center justify-between text-muted-foreground">
+                            <span>Commits</span>
+                            <span className="font-medium text-foreground">12</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-2 text-muted-foreground">
+                            <span>Branches</span>
+                            <span className="font-medium text-foreground">1</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-2 text-muted-foreground">
+                            <span>Tags</span>
+                            <span className="font-medium text-foreground">0</span>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    )
+}
+
+export const RepositoryIndex = () => {
+    const { tree, repoName, branch } = useLoaderData<typeof loader>();
+    const navigate = useNavigate();
+
+    return <Display tree={tree} repoName={repoName!} branch={branch} navigate={navigate} />;
+}
+
+export default RepositoryIndex
