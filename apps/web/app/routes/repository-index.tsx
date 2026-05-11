@@ -46,10 +46,10 @@ const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, r
                     </div>
                 </div>
 
-                <Table className="border rounded-lg overflow-hidden bg-background">
+                <Table className="border-none shadow-[var(--machined-shadow)] rounded-lg overflow-hidden bg-card">
                     <TableBody>
-                        <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                            <TableCell colSpan={2} className="text-sm text-muted-foreground py-2 px-4">
+                        <TableRow className="bg-[image:var(--header-gradient)] hover:bg-[image:var(--header-gradient)] border-b border-border">
+                            <TableCell colSpan={2} className="text-sm text-muted-foreground py-2 px-4 font-medium text-letterpress">
                                 Latest commit info would go here...
                             </TableCell>
                         </TableRow>
@@ -62,20 +62,20 @@ const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, r
                                 return (
                                     <TableRow
                                         key={entry.name}
-                                        className="group cursor-pointer"
+                                        className="group cursor-pointer border-b border-border/50 last:border-0"
                                         onClick={() => navigate(to)}
                                     >
                                         <TableCell className="w-10 pr-0 pl-4">
                                             <HugeiconsIcon
                                                 icon={entry.type === "tree" ? Folder01Icon : File01Icon}
-                                                className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-400" : "text-muted-foreground"}`}
+                                                className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-500" : "text-muted-foreground"}`}
                                                 size={16}
                                             />
                                         </TableCell>
                                         <TableCell className="px-3">
                                             <Link
                                                 to={to}
-                                                className="text-sm hover:text-blue-500 transition-colors"
+                                                className="text-sm font-medium hover:text-blue-600 transition-colors"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 {entry.name}
@@ -102,26 +102,26 @@ const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, r
                     <Separator />
 
                     <section>
-                        <h3 className="font-semibold text-sm mb-3">Languages</h3>
+                        <h3 className="font-semibold text-sm mb-3 text-letterpress">Languages</h3>
                         <div className="space-y-3">
-                            <div className="flex h-2 rounded-full overflow-hidden bg-muted">
-                                <div className="bg-blue-500 w-[64.2%]" title="TypeScript"></div>
-                                <div className="bg-orange-500 w-[31.8%]" title="Go"></div>
-                                <div className="bg-gray-400 w-[4.0%]" title="Other"></div>
+                            <div className="flex h-3 rounded-full overflow-hidden bg-muted border border-black/5 shadow-inner">
+                                <div className="bg-blue-500 w-[64.2%] bg-glossy" title="TypeScript"></div>
+                                <div className="bg-orange-500 w-[31.8%] bg-glossy" title="Go"></div>
+                                <div className="bg-gray-400 w-[4.0%] bg-glossy" title="Other"></div>
                             </div>
                             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs">
                                 <span className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm border border-black/10"></span>
                                     <span className="font-medium text-foreground">TypeScript</span>
                                     <span className="text-muted-foreground">64.2%</span>
                                 </span>
                                 <span className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm border border-black/10"></span>
                                     <span className="font-medium text-foreground">Go</span>
                                     <span className="text-muted-foreground">31.8%</span>
                                 </span>
                                 <span className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                                    <span className="w-2.5 h-2.5 rounded-full bg-gray-400 shadow-sm border border-black/10"></span>
                                     <span className="font-medium text-foreground">Other</span>
                                     <span className="text-muted-foreground">4.0%</span>
                                 </span>

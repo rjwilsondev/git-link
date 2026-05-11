@@ -7,6 +7,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
+import { ButtonGroup } from "~/components/ui/button-group";
 
 export default function RepositoryLayout() {
   const { repoName } = useParams();
@@ -16,9 +17,9 @@ export default function RepositoryLayout() {
       <header className="bg-muted/10 border-b">
         <div className="max-w-7xl mx-auto px-4 pt-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-2 text-xl">
+            <div className="flex items-center gap-2 text-xl text-letterpress">
               <HugeiconsIcon icon={Book02Icon} className="text-muted-foreground w-5 h-5" size={20} />
-              <Link to="/" className="text-blue-500 hover:underline">ryan</Link>
+              <Link to="/" className="text-blue-600 hover:underline">ryan</Link>
               <span className="text-muted-foreground">/</span>
               <Link to={`/repos/${repoName}`} className="font-semibold hover:underline">{repoName}</Link>
               <Badge variant="outline" className="ml-2 font-medium text-muted-foreground">
@@ -26,18 +27,22 @@ export default function RepositoryLayout() {
               </Badge>
             </div>
 
-            <div className="flex items-center gap-2">
+            <ButtonGroup className="shadow-sm">
               <Button variant="outline" size="sm" className="gap-1.5 h-8">
                 <HugeiconsIcon icon={GitForkIcon} size={14} />
                 Fork
-                <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-muted text-[10px] font-normal">0</span>
+                <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-muted text-[10px] font-normal border">0</span>
               </Button>
-              <Button variant="outline" size="sm" className="gap-1.5 h-8 text-yellow-600 border-yellow-200 bg-yellow-50/50 hover:bg-yellow-100 hover:text-yellow-700">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1.5 h-8 text-amber-700 border-amber-200 bg-[image:var(--golden-gradient)] bg-amber-50 hover:bg-amber-100 hover:text-amber-800 shadow-[var(--shimmer-top)]"
+              >
                 <HugeiconsIcon icon={StarIcon} size={14} />
                 Star
-                <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-yellow-100 text-[10px] font-normal text-yellow-700">0</span>
+                <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-amber-100/50 text-[10px] font-normal text-amber-800 border border-amber-200">0</span>
               </Button>
-            </div>
+            </ButtonGroup>
           </div>
         </div>
       </header>
