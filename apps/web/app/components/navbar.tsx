@@ -6,7 +6,7 @@ import { AvatarDropdown } from "./avatar-dropdown";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-gradient-to-b from-taupe-50 to-taupe-200 shadow-sm">
       <div className="flex h-14 items-center gap-4 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
           <HugeiconsIcon icon={StarsIcon} className="w-6 h-6 text-primary" size={24} />

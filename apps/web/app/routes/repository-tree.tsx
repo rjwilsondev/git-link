@@ -80,10 +80,10 @@ export const RepositoryTreeViewer = () => {
                 </div>
             </div>
 
-            <Table className="border rounded-lg overflow-hidden bg-background">
+            <Table className="border-none shadow-[var(--machined-shadow)] rounded-lg overflow-hidden bg-card">
                 <TableBody>
-                    <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                        <TableCell colSpan={2} className="text-sm text-muted-foreground py-2 px-4">
+                    <TableRow className="bg-[image:var(--header-gradient)] hover:bg-[image:var(--header-gradient)] border-b border-border">
+                        <TableCell colSpan={2} className="text-sm text-muted-foreground py-2 px-4 font-medium text-letterpress">
                             Latest commit info would go here...
                         </TableCell>
                     </TableRow>
@@ -96,20 +96,20 @@ export const RepositoryTreeViewer = () => {
                             return (
                                 <TableRow 
                                     key={entry.name} 
-                                    className="group cursor-pointer"
+                                    className="group cursor-pointer border-b border-border/50 last:border-0"
                                     onClick={() => navigate(to)}
                                 >
                                     <TableCell className="w-10 pr-0 pl-4">
                                         <HugeiconsIcon
                                             icon={entry.type === "tree" ? Folder01Icon : File01Icon}
-                                            className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-400" : "text-muted-foreground"}`}
+                                            className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-500" : "text-muted-foreground"}`}
                                             size={16}
                                         />
                                     </TableCell>
                                     <TableCell className="px-3">
                                         <Link 
                                             to={to} 
-                                            className="text-sm hover:text-blue-500 transition-colors"
+                                            className="text-sm font-medium hover:text-blue-600 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             {entry.name}

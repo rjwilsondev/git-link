@@ -11,7 +11,7 @@ export function Welcome({ repos }: { repos: string[] }) {
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-semibold">Repositories</h1>
-        <Button size="sm" className="bg-primary hover:bg-primary/90 text-white border-none">
+        <Button size="sm">
           <HugeiconsIcon icon={Add01Icon} className="w-4 h-4 mr-2" size={16} /> New
         </Button>
       </div>

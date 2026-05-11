@@ -33,7 +33,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className="min-h-screen bg-background font-sans antialiased overflow-x-hidden">
+        <div className="bg-noise" aria-hidden="true" />
+        <svg className="absolute w-0 h-0 invisible" aria-hidden="true">
+          <filter id="golden-bevel">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+            <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.5" specularExponent="20" lightingColor="#ffffff" result="specOut">
+              <fePointLight x="-5000" y="-10000" z="20000" />
+            </feSpecularLighting>
+            <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut" />
+            <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litGraphic" />
+          </filter>
+        </svg>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -46,9 +57,11 @@ export default function App() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <Navbar />
-      <div className="flex-1">
-        <Outlet />
-      </div>
+      <main className="flex-1 flex justify-center w-full px-4 sm:px-6 py-6">
+        <div className="w-full max-w-[1100px] card-machined p-6 bg-card min-h-[80vh]">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 }
