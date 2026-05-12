@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 // reposRoot is a package-level variable shared across all files in 'package main'.
@@ -14,6 +15,10 @@ func init() {
 	reposRoot = os.Getenv("REPOS_ROOT")
 	if reposRoot == "" {
 		reposRoot = "../../data/repositories"
+	}
+	absPath, err := filepath.Abs(reposRoot)
+	if err == nil {
+		reposRoot = absPath
 	}
 }
 
@@ -30,6 +35,12 @@ func main() {
 	mux.HandleFunc("GET /api/repos/{repoName}", handleGetTree)
 	mux.HandleFunc("GET /api/repos/{repoName}/tree/{branch}/{path...}", handleGetTree)
 	mux.HandleFunc("GET /api/repos/{repoName}/blob/{hash}", handleGetBlob)
+	mux.HandleFunc("POST /api/repos", handleCreateRepo)
+
+	// Git Protocol routes
+	// Matches /{repoPath}/info/refs, /{repoPath}/git-receive-pack, etc.
+	// The repoPath will likely end in .git
+	mux.HandleFunc("/{repoPath}/{suffix...}", handleGitProtocol)
 
 	port := os.Getenv("PORT")
 	if port == "" {

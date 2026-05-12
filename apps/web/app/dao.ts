@@ -19,3 +19,18 @@ export async function getRepositoryBlob(repoName: string, hash: string) {
     const response = await fetch(reposEndpoint);
     return response.json() as Promise<string>;
 }
+
+export async function createRepository(name: string) {
+    const reposEndpoint = `${GIT_SERVER_URL}/api/repos`;
+    const response = await fetch(reposEndpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+    });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
+    return response.json();
+}
