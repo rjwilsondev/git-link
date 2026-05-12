@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/http/cgi"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // handleRepos lists all available repository directories.
@@ -77,4 +80,51 @@ func handleGetBlob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(content)
+}
+
+func handleCreateRepo(w http.ResponseWriter, r *http.Request) {
+	var payload struct {
+		Name string `json:"name"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if payload.Name == "" {
+		http.Error(w, "Repository name is required", http.StatusBadRequest)
+		return
+	}
+
+	repoPath := filepath.Join(reposRoot, payload.Name)
+	if _, err := os.Stat(repoPath); err == nil {
+		http.Error(w, "Repository already exists", http.StatusConflict)
+		return
+	}
+
+	if err := initBareRepository(repoPath); err != nil {
+		http.Error(w, "Failed to initialize repository: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Repository created successfully"})
+}
+
+func handleGitProtocol(w http.ResponseWriter, r *http.Request) {
+	gitExecPath, err := exec.Command("git", "--exec-path").Output()
+	if err != nil {
+		http.Error(w, "Git not found", http.StatusInternalServerError)
+		return
+	}
+	backendPath := filepath.Join(strings.TrimSpace(string(gitExecPath)), "git-http-backend")
+
+	handler := &cgi.Handler{
+		Path: backendPath,
+		Env: []string{
+			"GIT_PROJECT_ROOT=" + reposRoot,
+			"GIT_HTTP_EXPORT_ALL=1",
+		},
+	}
+	handler.ServeHTTP(w, r)
 }

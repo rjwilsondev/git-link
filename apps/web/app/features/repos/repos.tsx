@@ -1,4 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Link } from "react-router";
 import { Search01Icon, StarIcon, Add01Icon, Book02Icon } from "@hugeicons/core-free-icons";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
@@ -11,9 +12,11 @@ export function Welcome({ repos }: { repos: string[] }) {
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-semibold">Repositories</h1>
-        <Button size="sm">
-          <HugeiconsIcon icon={Add01Icon} className="w-4 h-4 mr-2" size={16} /> New
-        </Button>
+        <Link to="/repos/new">
+          <Button size="sm" >
+            <HugeiconsIcon icon={Add01Icon} className="w-4 h-4 mr-2" size={16} /> New
+          </Button>
+        </Link>
       </div>
 
       {/* Search & Filters */}

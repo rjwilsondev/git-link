@@ -4,13 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "~/components/lib/utils"
 
 const alertVariants = cva(
-  "group/alert relative grid w-full gap-0.5 rounded-lg border px-2 py-1.5 text-left text-xs/relaxed has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-1.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-3.5",
+  "group/alert relative w-full rounded-lg border px-4 py-3 text-sm shadow-sm transition-all has-[>svg]:pl-11 *:[svg]:absolute *:[svg]:left-4 *:[svg]:top-4 *:[svg]:text-current",
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground",
+        default: "bg-card text-card-foreground bg-glossy",
         destructive:
-          "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current",
+          "border-red-600/50 bg-red-50 text-red-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_50%,rgba(0,0,0,0.05)_100%)] dark:bg-red-950 dark:text-red-50",
       },
     },
     defaultVariants: {
@@ -39,7 +39,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="alert-title"
       className={cn(
-        "font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground",
+        "mb-1 font-semibold leading-none tracking-tight text-letterpress",
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={cn(
-        "text-xs/relaxed text-balance text-muted-foreground md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
+        "text-sm opacity-90 [&_p]:leading-relaxed",
         className
       )}
       {...props}

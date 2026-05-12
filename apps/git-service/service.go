@@ -2,6 +2,7 @@ package main
 
 import (
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -52,4 +53,13 @@ func getRepositoryBlob(repoPath, hash string) (string, error) {
 		return "", err
 	}
 	return string(output), nil
+}
+
+func initBareRepository(repoPath string) error {
+	if err := exec.Command("git", "init", "--bare", repoPath).Run(); err != nil {
+		return err
+	}
+	// Enable push support over HTTP
+	cmd := exec.Command("git", "config", "-f", filepath.Join(repoPath, "config"), "http.receivepack", "true")
+	return cmd.Run()
 }
