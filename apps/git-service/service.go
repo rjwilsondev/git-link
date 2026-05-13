@@ -1,27 +1,50 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"fmt"
+	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
-// getRepositoryTree executes the 'git ls-tree' command and returns a list of tree entries.
-func getRepositoryTree(repoPath, branch, subPath string) ([]TreeEntry, error) {
-	// '-z' makes output null-terminated; '--full-tree' shows paths relative to repo root.
-	cmd := exec.Command("git", "ls-tree", "-z", "--full-tree", branch+":"+subPath)
-	cmd.Dir = repoPath
+type GitRepository struct {
+	Path string
+}
 
-	output, err := cmd.Output()
+func NewGitRepository(repoName string) (*GitRepository, error) {
+	var path = filepath.Join(reposRoot, repoName)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil, fmt.Errorf("repository not found: %s", repoName)
+	}
+	return &GitRepository{Path: path}, nil
+}
+
+func (r *GitRepository) git(ctx context.Context, args ...string) (string, error) {
+	var stdout, stderr bytes.Buffer
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = r.Path
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	log.Println("Executing git:", cmd.Args)
+	err := cmd.Run()
+	if err != nil {
+		return "", fmt.Errorf("git %v failed: %s", args, stderr.String())
+	}
+	var output = stdout.String()
+	log.Println("Output: ", output)
+	return output, nil
+}
+
+func (r *GitRepository) GetTree(ctx context.Context, branch string, subPath string) ([]TreeEntry, error) {
+	output, err := r.git(ctx, "ls-tree", "-z", "--full-tree", branch+":"+subPath)
 	if err != nil {
 		return nil, err
 	}
 
-	return parseGitTree(string(output)), nil
-}
-
-// parseGitTree converts the raw text output from Git into a slice of TreeEntry structs.
-func parseGitTree(output string) []TreeEntry {
 	var entries []TreeEntry
 	rawEntries := strings.Split(output, "\x00") // Split by null character
 	for _, entry := range rawEntries {
@@ -41,14 +64,11 @@ func parseGitTree(output string) []TreeEntry {
 			Name: parts[3],
 		})
 	}
-	return entries
+	return entries, nil
 }
 
-func getRepositoryBlob(repoPath, hash string) (string, error) {
-	// git cat-file -p <hash>
-	cmd := exec.Command("git", "cat-file", "-p", hash)
-	cmd.Dir = repoPath
-	output, err := cmd.Output()
+func (r *GitRepository) GetBlob(ctx context.Context, hash string) (string, error) {
+	output, err := r.git(ctx, "cat-file", "-p", hash)
 	if err != nil {
 		return "", err
 	}
@@ -62,4 +82,29 @@ func initBareRepository(repoPath string) error {
 	// Enable push support over HTTP
 	cmd := exec.Command("git", "config", "-f", filepath.Join(repoPath, "config"), "http.receivepack", "true")
 	return cmd.Run()
+}
+
+func (r *GitRepository) GetDefaultBranch(ctx context.Context) (string, error) {
+	// symbolic-ref --short HEAD returns the clean branch name (e.g., "main" or "master")
+	output, err := r.git(ctx, "symbolic-ref", "--short", "HEAD")
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(output), nil
+}
+
+func (r *GitRepository) ListBranches(ctx context.Context) ([]string, error) {
+	// Use for-each-ref to get short names directly
+	output, err := r.git(ctx, "for-each-ref", "--format=%(refname:short)", "refs/heads")
+	if err != nil {
+		return nil, err
+	}
+	var branches []string
+	rawBranches := strings.Split(strings.TrimSpace(output), "\n")
+	for _, branch := range rawBranches {
+		if branch != "" {
+			branches = append(branches, branch)
+		}
+	}
+	return branches, nil
 }

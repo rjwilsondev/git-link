@@ -7,4 +7,7 @@ export type TreeEntry = {
     name: string;
 };
 
-export type RepositoryTree = Array<TreeEntry>;
+export type RepositoryTree = {
+    branch: string;
+    entries: TreeEntry[];
+};

@@ -33,13 +33,15 @@ func main() {
 	// - {path...} captures everything else (including slashes).
 	mux.HandleFunc("GET /api/repos", handleRepos)
 	mux.HandleFunc("GET /api/repos/{repoName}", handleGetTree)
+	mux.HandleFunc("GET /api/repos/{repoName}/tree", handleGetTree)
+	mux.HandleFunc("GET /api/repos/{repoName}/branches", handleGetBranches)
 	mux.HandleFunc("GET /api/repos/{repoName}/tree/{branch}/{path...}", handleGetTree)
 	mux.HandleFunc("GET /api/repos/{repoName}/blob/{hash}", handleGetBlob)
 	mux.HandleFunc("POST /api/repos", handleCreateRepo)
 
 	// Git Protocol routes
-	// Matches /{repoPath}/info/refs, /{repoPath}/git-receive-pack, etc.
-	// The repoPath will likely end in .git
+	// Standard Git clients use .git suffix. Making this specific prevents it
+	// from "stealing" invalid API requests.
 	mux.HandleFunc("/{repoPath}/{suffix...}", handleGitProtocol)
 
 	port := os.Getenv("PORT")

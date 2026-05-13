@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/http/cgi"
 	"os"
@@ -11,9 +10,12 @@ import (
 	"strings"
 )
 
-// handleRepos lists all available repository directories.
+type TreeResponse struct {
+	Branch  string      `json:"branch"`
+	Entries []TreeEntry `json:"entries"`
+}
+
 func handleRepos(w http.ResponseWriter, r *http.Request) {
-	log.Println("handleRepos")
 	entries, err := os.ReadDir(reposRoot)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -29,51 +31,66 @@ func handleRepos(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(repos)
 }
 
-// handleGetTree handles fetching the file tree for a specific repository/branch/path.
 func handleGetTree(w http.ResponseWriter, r *http.Request) {
-	// Using Go 1.22+ PathValue to grab variables directly from the URL!
 	repoName := r.PathValue("repoName")
 	branch := r.PathValue("branch")
 	subPath := r.PathValue("path")
 
-	// Set defaults if not provided in URL
-	if branch == "" {
-		branch = "main"
-	}
-
-	repoPath := filepath.Join(reposRoot, repoName)
-
-	// Validate repo exists
-	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
-		http.Error(w, "Repository not found", http.StatusNotFound)
+	repo, err := NewGitRepository(repoName)
+	if err != nil {
+		http.Error(w, "Failed to find repository: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Call our service logic from service.go
-	entries, err := getRepositoryTree(repoPath, branch, subPath)
+	if branch == "" {
+		var err error
+		branch, err = repo.GetDefaultBranch(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to get default branch: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	entries, err := repo.GetTree(r.Context(), branch, subPath)
 	if err != nil {
 		http.Error(w, "Failed to list tree: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(entries)
+	json.NewEncoder(w).Encode(TreeResponse{
+		Branch:  branch,
+		Entries: entries,
+	})
 }
 
-func handleGetBlob(w http.ResponseWriter, r *http.Request) {
-	// Using Go 1.22+ PathValue to grab variables directly from the URL!
+func handleGetBranches(w http.ResponseWriter, r *http.Request) {
 	repoName := r.PathValue("repoName")
-	hash := r.PathValue("hash")
-
-	repoPath := filepath.Join(reposRoot, repoName)
-
-	// Validate repo exists
-	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
-		http.Error(w, "Repository not found", http.StatusNotFound)
+	repo, err := NewGitRepository(repoName)
+	if err != nil {
+		http.Error(w, "Failed to find repository: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Call our service logic from service.go
-	content, err := getRepositoryBlob(repoPath, hash)
+	branches, err := repo.ListBranches(r.Context())
+	if err != nil {
+		http.Error(w, "Failed to list branches: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(branches)
+}
+
+func handleGetBlob(w http.ResponseWriter, r *http.Request) {
+	repoName := r.PathValue("repoName")
+	hash := r.PathValue("hash")
+
+	repo, err := NewGitRepository(repoName)
+	if err != nil {
+		http.Error(w, "Failed to find repository: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	content, err := repo.GetBlob(r.Context(), hash)
 	if err != nil {
 		http.Error(w, "Failed to get blob: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -96,12 +113,13 @@ func handleCreateRepo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repoPath := filepath.Join(reposRoot, payload.Name)
-	if _, err := os.Stat(repoPath); err == nil {
+	_, err := NewGitRepository(payload.Name)
+	if err == nil {
 		http.Error(w, "Repository already exists", http.StatusConflict)
 		return
 	}
 
+	var repoPath = filepath.Join(reposRoot, payload.Name)
 	if err := initBareRepository(repoPath); err != nil {
 		http.Error(w, "Failed to initialize repository: "+err.Error(), http.StatusInternalServerError)
 		return

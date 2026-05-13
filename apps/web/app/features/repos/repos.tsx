@@ -3,12 +3,11 @@ import { Link } from "react-router";
 import { Search01Icon, StarIcon, Add01Icon, Book02Icon } from "@hugeicons/core-free-icons";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 
-export function Welcome({ repos }: { repos: string[] }) {
+export function ReposList({ repos }: { repos: string[] }) {
   return (
-    <main className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto px-4 pb-8">
       {/* Header Section */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-semibold">Repositories</h1>
@@ -39,16 +38,10 @@ export function Welcome({ repos }: { repos: string[] }) {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <HugeiconsIcon icon={Book02Icon} className="w-4 h-4 text-muted-foreground" size={16} />
-                <a href={`/repos/${repo}`} className="text-blue-500 hover:underline text-xl font-semibold">
+                <Link to={`/repos/${repo}`} className="text-blue-500 hover:underline text-xl font-semibold">
                   {repo}
-                </a>
-                <Badge variant="outline" className="text-xs rounded-full px-2 py-0 font-medium">
-                  Public
-                </Badge>
+                </Link>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Updated 2 days ago
-              </p>
             </div>
 
             <Button variant="outline" size="sm" className="h-8">
@@ -63,6 +56,6 @@ export function Welcome({ repos }: { repos: string[] }) {
           No repositories found.
         </div>
       )}
-    </main>
+    </div>
   );
 }

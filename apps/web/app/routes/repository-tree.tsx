@@ -88,27 +88,27 @@ export const RepositoryTreeViewer = () => {
                         </TableCell>
                     </TableRow>
                     {
-                        tree.map((entry) => {
+                        tree.entries.map((entry) => {
                             const to = entry.type === "blob"
                                 ? `/repos/${repoName}/blob/${entry.hash}`
                                 : `/repos/${repoName}/tree/${branch}/${path ? path + "/" : ""}${entry.name}`;
 
                             return (
-                                <TableRow 
-                                    key={entry.name} 
+                                <TableRow
+                                    key={entry.name}
                                     className="group cursor-pointer border-b border-border/50 last:border-0"
                                     onClick={() => navigate(to)}
                                 >
                                     <TableCell className="w-10 pr-0 pl-4">
                                         <HugeiconsIcon
-                                            icon={entry.type === "tree" ? Folder01Icon : File01Icon}
-                                            className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-500" : "text-muted-foreground"}`}
+                                            icon={Folder01Icon}
+                                            className={`w-4 h-4 text-muted-foreground`}
                                             size={16}
                                         />
                                     </TableCell>
                                     <TableCell className="px-3">
-                                        <Link 
-                                            to={to} 
+                                        <Link
+                                            to={to}
                                             className="text-sm font-medium hover:text-blue-600 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >

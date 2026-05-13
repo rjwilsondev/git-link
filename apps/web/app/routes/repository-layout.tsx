@@ -33,9 +33,9 @@ export default function RepositoryLayout() {
                 Fork
                 <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-muted text-[10px] font-normal border">0</span>
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="gap-1.5 h-8 text-amber-700 border-amber-200 bg-[image:var(--golden-gradient)] bg-amber-50 hover:bg-amber-100 hover:text-amber-800 shadow-[var(--shimmer-top)]"
               >
                 <HugeiconsIcon icon={StarIcon} size={14} />

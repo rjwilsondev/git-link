@@ -25,7 +25,7 @@ export async function action({ request }: { request: Request }) {
     const [newRepo] = await db.insert(repositories).values({
       name,
       description,
-      ownerId: 1, // Placeholder for current user
+      ownerUser: "ryan", // Placeholder for current user
     }).returning();
 
     // 3. Git Service: Initialize Bare Repo
@@ -99,10 +99,10 @@ export default function RepositoryNew() {
           )}
 
           <div className="flex items-center gap-4">
-            <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700 text-white shadow-lg glossy px-8">
+            <Button type="submit" disabled={isSubmitting} size="lg">
               {isSubmitting ? "Creating..." : "Create repository"}
             </Button>
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" size="lg" >
               <a href="/">Cancel</a>
             </Button>
           </div>
