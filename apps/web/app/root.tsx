@@ -33,16 +33,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen bg-background font-sans antialiased overflow-x-hidden">
+      <body className="bg-background min-h-screen overflow-x-hidden font-sans antialiased">
         <div className="bg-noise" aria-hidden="true" />
-        <svg className="absolute w-0 h-0 invisible" aria-hidden="true">
+        <svg className="invisible absolute h-0 w-0" aria-hidden="true">
           <filter id="golden-bevel">
             <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
-            <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.5" specularExponent="20" lightingColor="#ffffff" result="specOut">
+            <feSpecularLighting
+              in="blur"
+              surfaceScale="5"
+              specularConstant="0.5"
+              specularExponent="20"
+              lightingColor="#ffffff"
+              result="specOut"
+            >
               <fePointLight x="-5000" y="-10000" z="20000" />
             </feSpecularLighting>
-            <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut" />
-            <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litGraphic" />
+            <feComposite
+              in="specOut"
+              in2="SourceAlpha"
+              operator="in"
+              result="specOut"
+            />
+            <feComposite
+              in="SourceGraphic"
+              in2="specOut"
+              operator="arithmetic"
+              k1="0"
+              k2="1"
+              k3="1"
+              k4="0"
+              result="litGraphic"
+            />
           </filter>
         </svg>
         {children}
@@ -57,8 +78,8 @@ export default function App() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1 flex justify-center w-full px-4 sm:px-6 py-6">
-        <div className="w-full max-w-[1100px] card-machined p-6 bg-card min-h-[80vh]">
+      <main className="flex w-full flex-1 justify-center px-4 py-6 sm:px-6">
+        <div className="card-machined bg-card min-h-[80vh] w-full max-w-[1100px] p-6">
           <Outlet />
         </div>
       </main>
@@ -83,11 +104,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="container mx-auto p-4 pt-16">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="w-full overflow-x-auto p-4">
           <code>{stack}</code>
         </pre>
       )}

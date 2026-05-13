@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/repository-list";
 import { getRepositories } from "~/dao";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
   return [
     { title: "Repositories" },
     { name: "description", content: "Explore available repositories." },
@@ -18,6 +18,6 @@ export async function loader() {
 export const RepositoryList = () => {
   const { repositories } = useLoaderData<typeof loader>();
   return <ReposList repos={repositories} />;
-}
+};
 
-export default RepositoryList
+export default RepositoryList;
