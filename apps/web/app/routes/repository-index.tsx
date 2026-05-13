@@ -2,9 +2,16 @@ import { Link, useLoaderData, useNavigate } from "react-router";
 import type { Route } from "./+types/repository-index";
 import type { RepositoryTree, TreeEntry } from "~/types";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Folder01Icon, File01Icon } from "@hugeicons/core-free-icons";
-import { getRepositoryTree } from "~/dao";
+import { Folder01Icon, File01Icon, GitBranchIcon } from "@hugeicons/core-free-icons";
+import { getBranches, getRepositoryTree } from "~/dao";
 import { Button } from "~/components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "~/components/ui/select";
 import {
     Table,
     TableBody,
@@ -21,22 +28,38 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-    // TODO: Handle branch selection in UI
-    const { repoName, branch = "main" } = params;
-    const tree = await getRepositoryTree(repoName!, branch, "");
-    return { tree, repoName, branch };
+    const { repoName } = params;
+    const [tree, branches] = await Promise.all([
+        getRepositoryTree(repoName!),
+        getBranches(repoName!)
+    ]);
+    return { tree, repoName, branches };
 }
 
-const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, repoName: string, branch: string, navigate: (path: string) => void }) => {
+const Display = ({ tree, repoName, branches, navigate }: { tree: RepositoryTree, repoName: string, branches: string[], navigate: (path: string) => void }) => {
+    const currentBranch = tree.branch
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-3 space-y-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="bg-muted/50">
-                            <span className="text-muted-foreground font-normal">Branch:</span>
-                            <span>{branch}</span>
-                        </Button>
+                        <Select
+                            value={currentBranch}
+                            onValueChange={(value) => navigate(`/repos/${repoName}/tree/${value}`)}
+                        >
+                            <SelectTrigger className="w-[160px] bg-muted/50">
+                                <div className="flex items-center gap-1.5">
+                                    <b>Branch: </b> {currentBranch}
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {branches.map((b) => (
+                                    <SelectItem key={b} value={b}>
+                                        {b}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -54,10 +77,10 @@ const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, r
                             </TableCell>
                         </TableRow>
                         {
-                            tree.map((entry) => {
+                            tree.entries.map((entry) => {
                                 const to = entry.type === "blob"
                                     ? `/repos/${repoName}/blob/${entry.hash}`
-                                    : `/repos/${repoName}/tree/${branch}/${entry.name}`;
+                                    : `/repos/${repoName}/tree/${currentBranch}/${entry.name}`;
 
                                 return (
                                     <TableRow
@@ -68,7 +91,7 @@ const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, r
                                         <TableCell className="w-10 pr-0 pl-4">
                                             <HugeiconsIcon
                                                 icon={entry.type === "tree" ? Folder01Icon : File01Icon}
-                                                className={`w-4 h-4 ${entry.type === "tree" ? "text-blue-500" : "text-muted-foreground"}`}
+                                                className={`w-4 h-4 text-muted-foreground`}
                                                 size={16}
                                             />
                                         </TableCell>
@@ -152,10 +175,10 @@ const Display = ({ tree, repoName, branch, navigate }: { tree: RepositoryTree, r
 }
 
 export const RepositoryIndex = () => {
-    const { tree, repoName, branch } = useLoaderData<typeof loader>();
+    const { tree, repoName, branches } = useLoaderData<typeof loader>();
     const navigate = useNavigate();
 
-    return <Display tree={tree} repoName={repoName!} branch={branch} navigate={navigate} />;
+    return <Display tree={tree} repoName={repoName!} branches={branches} navigate={navigate} />;
 }
 
 export default RepositoryIndex

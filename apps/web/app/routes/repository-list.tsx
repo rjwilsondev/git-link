@@ -1,4 +1,4 @@
-import { Welcome } from "../features/repos/repos";
+import { ReposList } from "../features/repos/repos";
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/repository-list";
 import { getRepositories } from "~/dao";
@@ -17,7 +17,7 @@ export async function loader() {
 
 export const RepositoryList = () => {
   const { repositories } = useLoaderData<typeof loader>();
-  return <Welcome repos={repositories} />;
+  return <ReposList repos={repositories} />;
 }
 
 export default RepositoryList
