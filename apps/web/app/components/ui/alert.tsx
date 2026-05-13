@@ -1,7 +1,7 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "~/components/lib/utils"
+import { cn } from "~/components/lib/utils";
 
 const alertVariants = cva(
   "group/alert relative w-full rounded-lg border px-4 py-3 text-sm shadow-sm transition-all has-[>svg]:pl-11 *:[svg]:absolute *:[svg]:left-4 *:[svg]:top-4 *:[svg]:text-current",
@@ -16,8 +16,8 @@ const alertVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
-)
+  },
+);
 
 function Alert({
   className,
@@ -31,7 +31,7 @@ function Alert({
       className={cn(alertVariants({ variant }), className)}
       {...props}
     />
-  )
+  );
 }
 
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
@@ -39,12 +39,12 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="alert-title"
       className={cn(
-        "mb-1 font-semibold leading-none tracking-tight text-letterpress",
-        className
+        "text-letterpress mb-1 leading-none font-semibold tracking-tight",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function AlertDescription({
@@ -54,13 +54,10 @@ function AlertDescription({
   return (
     <div
       data-slot="alert-description"
-      className={cn(
-        "text-sm opacity-90 [&_p]:leading-relaxed",
-        className
-      )}
+      className={cn("text-sm opacity-90 [&_p]:leading-relaxed", className)}
       {...props}
     />
-  )
+  );
 }
 
 function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
@@ -70,7 +67,7 @@ function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
       className={cn("absolute top-1.5 right-2", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Alert, AlertTitle, AlertDescription, AlertAction }
+export { Alert, AlertTitle, AlertDescription, AlertAction };

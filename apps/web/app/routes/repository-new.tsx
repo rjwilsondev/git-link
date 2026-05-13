@@ -22,11 +22,14 @@ export async function action({ request }: { request: Request }) {
 
   try {
     // 2. BFF Logic: Save to Database
-    const [newRepo] = await db.insert(repositories).values({
-      name,
-      description,
-      ownerUser: "ryan", // Placeholder for current user
-    }).returning();
+    const [newRepo] = await db
+      .insert(repositories)
+      .values({
+        name,
+        description,
+        ownerUser: "ryan", // Placeholder for current user
+      })
+      .returning();
 
     // 3. Git Service: Initialize Bare Repo
     await createRepository(name);
@@ -43,15 +46,20 @@ export default function RepositoryNew() {
   const isSubmitting = navigation.state === "submitting";
 
   return (
-    <main className="max-w-2xl mx-auto p-8">
+    <main className="mx-auto max-w-2xl p-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-letterpress flex items-center gap-2">
-            <HugeiconsIcon icon={Book02Icon} className="w-6 h-6 text-muted-foreground" size={24} />
+          <h1 className="text-letterpress flex items-center gap-2 text-2xl font-bold">
+            <HugeiconsIcon
+              icon={Book02Icon}
+              className="text-muted-foreground h-6 w-6"
+              size={24}
+            />
             Create a new repository
           </h1>
           <p className="text-muted-foreground mt-2">
-            A repository contains all project files, including the revision history. Already have a project repository elsewhere?
+            A repository contains all project files, including the revision
+            history. Already have a project repository elsewhere?
           </p>
         </div>
 
@@ -60,28 +68,40 @@ export default function RepositoryNew() {
         <Form method="post" className="space-y-8">
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-semibold">Repository name *</Label>
+              <Label htmlFor="name" className="text-sm font-semibold">
+                Repository name *
+              </Label>
               <div className="flex items-center gap-2">
                 <Input
                   id="name"
                   name="name"
                   placeholder="my-awesome-project"
                   required
-                  className="max-w-md shadow-inner bg-muted/20"
+                  className="bg-muted/20 max-w-md shadow-inner"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                Great repository names are short and memorable. Need inspiration? How about <span className="text-green-600 font-medium">special-garbanzo</span>?
+              <p className="text-muted-foreground text-xs">
+                Great repository names are short and memorable. Need
+                inspiration? How about{" "}
+                <span className="font-medium text-green-600">
+                  special-garbanzo
+                </span>
+                ?
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-semibold">Description <span className="text-muted-foreground font-normal">(optional)</span></Label>
+              <Label htmlFor="description" className="text-sm font-semibold">
+                Description{" "}
+                <span className="text-muted-foreground font-normal">
+                  (optional)
+                </span>
+              </Label>
               <Input
                 id="description"
                 name="description"
                 placeholder="Brief description of your project"
-                className="shadow-inner bg-muted/20"
+                className="bg-muted/20 shadow-inner"
               />
             </div>
           </div>
@@ -89,12 +109,17 @@ export default function RepositoryNew() {
           <Separator />
 
           {actionData?.error && (
-            <Alert variant="destructive" className="shadow-[var(--depth-shadow)]">
-              <HugeiconsIcon icon={InformationCircleIcon} className="w-4 h-4" size={16} />
+            <Alert
+              variant="destructive"
+              className="shadow-[var(--depth-shadow)]"
+            >
+              <HugeiconsIcon
+                icon={InformationCircleIcon}
+                className="h-4 w-4"
+                size={16}
+              />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                {actionData.error}
-              </AlertDescription>
+              <AlertDescription>{actionData.error}</AlertDescription>
             </Alert>
           )}
 
@@ -102,7 +127,7 @@ export default function RepositoryNew() {
             <Button type="submit" disabled={isSubmitting} size="lg">
               {isSubmitting ? "Creating..." : "Create repository"}
             </Button>
-            <Button variant="ghost" size="lg" >
+            <Button variant="ghost" size="lg">
               <a href="/">Cancel</a>
             </Button>
           </div>

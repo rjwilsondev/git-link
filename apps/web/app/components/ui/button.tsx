@@ -1,14 +1,15 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button"
-import { cva, type VariantProps } from "class-variance-authority"
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "~/components/lib/utils"
+import { cn } from "~/components/lib/utils";
 
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-black/25 text-sm/relaxed font-semibold whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 active:translate-y-px active:brightness-95 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-[image:var(--golden-gradient)] bg-primary text-primary-foreground shadow-[var(--shimmer-top),var(--depth-shadow)] hover:brightness-110 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)]",
+        default:
+          "bg-[image:var(--golden-gradient)] bg-primary text-primary-foreground shadow-[var(--shimmer-top),var(--depth-shadow)] hover:brightness-110 active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)]",
         outline:
           "border-border bg-[image:var(--golden-gradient)] bg-card hover:bg-input/50 hover:text-foreground shadow-[var(--shimmer-top),var(--depth-shadow)]",
         secondary:
@@ -35,8 +36,8 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
-)
+  },
+);
 
 function Button({
   className,
@@ -50,7 +51,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  );
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
