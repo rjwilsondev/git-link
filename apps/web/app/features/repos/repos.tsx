@@ -9,8 +9,9 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import type { Repository } from "~/db/schema";
 
-export function ReposList({ repos }: { repos: string[] }) {
+export function ReposList({ repos }: { repos: Repository[] }) {
   return (
     <div className="mx-auto max-w-4xl px-4 pb-8">
       {/* Header Section */}
@@ -48,7 +49,7 @@ export function ReposList({ repos }: { repos: string[] }) {
       {/* Repo List */}
       <ul className="divide-border divide-y">
         {repos.map((repo) => (
-          <li key={repo} className="flex items-start justify-between py-6">
+          <li key={repo.name} className="flex items-start justify-between py-6">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <HugeiconsIcon
@@ -57,10 +58,10 @@ export function ReposList({ repos }: { repos: string[] }) {
                   size={16}
                 />
                 <Link
-                  to={`/repos/${repo}`}
+                  to={`/repos/${repo.name}`}
                   className="text-xl font-semibold text-blue-500 hover:underline"
                 >
-                  {repo}
+                  {repo.name}
                 </Link>
               </div>
             </div>

@@ -1,25 +1,23 @@
 import { Link, useLoaderData, useNavigate } from "react-router";
 import type { Route } from "./+types/repository-index";
-import type { RepositoryTree, TreeEntry } from "~/types";
+import type { RepositoryTree } from "~/types";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Folder01Icon,
   File01Icon,
-  GitBranchIcon,
 } from "@hugeicons/core-free-icons";
-import { getBranches, getRepositoryTree } from "~/dao";
 import { Button } from "~/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "~/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 import { Separator } from "~/components/ui/separator";
+import { LocalGitService } from "~/features/git.server";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Repository" },
     { name: "description", content: "Explore the repository files." },
@@ -28,10 +26,19 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { repoName } = params;
-  const [tree, branches] = await Promise.all([
-    getRepositoryTree(repoName!),
-    getBranches(repoName!),
+  const service = new LocalGitService(repoName)
+  const [defaultBranch, branches] = await Promise.all([
+    service.getDefaultBranch(),
+    service.getBranches(),
   ]);
+
+  const entries = await service.getTreeEntries(defaultBranch, "")
+
+  // console.log("entries", entries)
+  const tree: RepositoryTree = {
+    branch: defaultBranch,
+    entries,
+  };
   return { tree, repoName, branches };
 }
 

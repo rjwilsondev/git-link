@@ -1,7 +1,4 @@
 import { Form, redirect, useActionData, useNavigation } from "react-router";
-import { db } from "~/db";
-import { repositories } from "~/db/schema";
-import { createRepository } from "~/dao";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -9,32 +6,40 @@ import { Separator } from "~/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "~/components/ui/alert";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Book02Icon, InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { RepositoryService } from "~/features/git.server";
 
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
 
-  // 1. Basic Validation
-  if (!name || name.length < 3) {
+  const trimmedName = name ? name.trim() : "";
+
+  // 1. Validation
+  if (!trimmedName) {
+    return { error: "Repository name is required." };
+  }
+
+  if (trimmedName.length < 3) {
     return { error: "Repository name must be at least 3 characters long." };
   }
 
+  const nameRegex = /^[a-zA-Z0-9_-]+$/;
+  if (!nameRegex.test(trimmedName)) {
+    return { error: "Repository name can only contain alphanumeric characters, hyphens (-), and underscores (_)." };
+  }
+
+  const newRepo = {
+    name: trimmedName,
+    description: description ? description.trim() : null,
+    ownerUser: "rjwilson", // TODO: get this from auth
+  };
+
   try {
-    // 2. BFF Logic: Save to Database
-    const [newRepo] = await db
-      .insert(repositories)
-      .values({
-        name,
-        description,
-        ownerUser: "ryan", // Placeholder for current user
-      })
-      .returning();
+    const repoService = new RepositoryService();
+    await repoService.createRepository(newRepo);
 
-    // 3. Git Service: Initialize Bare Repo
-    await createRepository(name);
-
-    return redirect(`/repos/${newRepo.name}`);
+    return redirect(`/repos/${trimmedName}`);
   } catch (err: any) {
     return { error: err.message || "Failed to create repository" };
   }

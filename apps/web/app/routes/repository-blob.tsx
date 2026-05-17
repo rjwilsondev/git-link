@@ -1,9 +1,9 @@
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/repository-blob";
-import { getRepositoryBlob } from "~/dao";
 import { Button } from "~/components/ui/button";
+import { LocalGitService } from "~/features/git.server";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Blob" },
     { name: "description", content: "View file content." },
@@ -13,7 +13,8 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ params }: Route.LoaderArgs) {
   const repoName = params.repoName!;
   const hash = params.hash!;
-  const blobContent = await getRepositoryBlob(repoName, hash);
+  const gitService = new LocalGitService(repoName);
+  const blobContent = await gitService.getBlobContent(hash);
   return { blobContent };
 }
 

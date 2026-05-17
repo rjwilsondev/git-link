@@ -29,3 +29,6 @@ export const repositories = sqliteTable(
     };
   },
 );
+
+export type User = typeof users.$inferSelect
+export type Repository = typeof repositories.$inferSelect
