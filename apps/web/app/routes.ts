@@ -8,4 +8,5 @@ export default [
     route("tree/:branch/*", "routes/repository-tree.tsx", { id: "repo-tree" }),
     route("blob/:hash", "routes/repository-blob.tsx"),
   ]),
+  route("git/*", "routes/git.tsx"),
 ] satisfies RouteConfig;

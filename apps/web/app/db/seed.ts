@@ -15,6 +15,10 @@ async function main() {
       email: "ryan@example.com",
     },
     {
+      username: "rjwilson",
+      email: "rjwilson@example.com",
+    },
+    {
       username: "antigravity",
       email: "ai@example.com",
     },
@@ -28,13 +32,13 @@ async function main() {
   // Insert repositories
   const repoList = [
     {
-      name: "git-link",
+      name: "react",
       description: "A simple GitHub clone built with React Router and Go",
       ownerUser: "rjwilson",
     },
     {
-      name: "drizzle-orm",
-      description: "TypeScript ORM for SQL databases",
+      name: "gitea",
+      description: "A simple, fast, and easy to deliver self-hosted ",
       ownerUser: "rjwilson",
     },
     {

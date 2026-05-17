@@ -3,7 +3,6 @@ import type { Route } from "./+types/repository-tree";
 import type { RepositoryTree, TreeEntry } from "~/types";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Folder01Icon, File01Icon } from "@hugeicons/core-free-icons";
-import { getRepositoryTree } from "~/dao";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 import {
@@ -14,20 +13,22 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import React from "react";
+import { LocalGitService } from "~/features/git.server";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [{ title: "Repository Tree" }];
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { repoName, branch = "main" } = params;
   const path = params["*"] || "";
-  const tree = await getRepositoryTree(repoName!, branch, path);
-  return { tree, repoName, branch, path };
+  const gitService = new LocalGitService(repoName!);
+  const treeEntries = await gitService.getTreeEntries(branch, path);
+  return { treeEntries, repoName, branch, path };
 }
 
 export const RepositoryTreeViewer = () => {
-  const { tree, repoName, branch, path } = useLoaderData<typeof loader>();
+  const { treeEntries, repoName, branch, path } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const pathSegments = path.split("/").filter(Boolean);
 
@@ -58,7 +59,7 @@ export const RepositoryTreeViewer = () => {
                   <BreadcrumbItem>
                     <BreadcrumbLink>
                       <Link
-                        to={`/repos/${repoName}/tree/${branch}/${pathSegments.slice(0, index + 1).join("/")}`}
+                        to={`/repos/${repoName}/treeEntries/${branch}/${pathSegments.slice(0, index + 1).join("/")}`}
                         className="text-blue-500"
                       >
                         {segment}
@@ -86,7 +87,7 @@ export const RepositoryTreeViewer = () => {
               Latest commit info would go here...
             </TableCell>
           </TableRow>
-          {tree.entries.map((entry) => {
+          {treeEntries.map((entry) => {
             const to =
               entry.type === "blob"
                 ? `/repos/${repoName}/blob/${entry.hash}`
